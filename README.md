@@ -12,18 +12,67 @@ https://helion.pl/ksiazki/kubernetes-kurs-video-wdrazanie-aplikacji-michal-zylow
 
 ### 1.2. O Kubernetesie w kilka minut
 
-
-![](/src/img/kubernetes-control-plane.png)
-
 ### 1.3. Środowisko potrzebne do pracy z kursem, cz. 1.
+
+`Minikube`
+autmat do uruchomienia napisany w GO (mac, windows, linux). Wspiera kilka systemów virtualizacji (np. KVM2, hyperkit, virtualbox). 
+Aplikacja która po uruchomieniu utworzy nam Wirtualną maszynę i skonfigurują ją jako jednowęzłowy lokalnym klaster kubernetesa. 
+
+Pobierz i zainstaluj:
+
+Virtual Box
+
+https://www.virtualbox.org/wiki/Linux_Downloads
+
+
 
 ### 1.4. Środowisko potrzebne do pracy z kursem, cz. 2.
 
+Pobierz i zainstaluj:
+
+Kubectl
+
+https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/#install-kubectl-binary-with-curl-on-linux
+
+
+Minikube
+
+https://github.com/kubernetes/minikube
+```
+curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+sudo install minikube-linux-amd64 /usr/local/bin/minikube
+
+```
+
+Uruchom Minikube
+```
+minikube start
+```
+
+Sprawdzić czy wszystkko przebiegło poprawnie
+```
+kubectl get nodes
+```
+![minikube_start](/src/img/minikube_start.png) 
+
+
 ### 1.5. Środowisko potrzebne do pracy z kursem, cz. 3.
+
+Ponowne uruchomienie wirutalnej maszyny.
+
+minikube  wykrywa wcześniej utworzoną VM i wykonuje restarting
+```
+minikube start
+```
+
+
+
 
 ## 2. Podstawy interakcji z klastrem
 
 ### 2.1. Jak działa i czym jest kub
+
+
 
 ### 2.2. Pierwszy kontener
 
