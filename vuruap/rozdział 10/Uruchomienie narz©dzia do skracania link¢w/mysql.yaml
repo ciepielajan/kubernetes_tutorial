@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql
+  labels: 
+    app: mysql-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql-db
+  template:
+    metadata:
+      labels:
+        app: mysql-db
+    spec:
+      containers:
+      - name: mysql
+        image: mysql:5.7
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: password
+        ports:
+        - containerPort: 3306
+          name: mysql
+        volumeMounts:
+        - mountPath: /var/lib/mysql
+          name: mysql-storage
+      volumes:
+      - name: mysql-storage
+        hostPath:
+          path: /opt/db
+          type: DirectoryOrCreate
+      nodeSelector:
+        storage: "mysql"

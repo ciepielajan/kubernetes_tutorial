@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  namespace: boinc
+  name: boinc-ds
+spec:
+  selector:
+    matchLabels:
+      daemon: boinc
+  template:
+    metadata:
+      labels:
+        daemon: boinc
+    spec:
+      containers:
+      - name: boinc
+        image: rsmitty/boinc
+        env:
+        - name: boincurl
+          valueFrom:
+            secretKeyRef:
+              name: boinc-secret
+              key: url
+        - name: boinckey
+          valueFrom:
+            secretKeyRef:
+              name: boinc-secret
+              key: key
+        resources:
+          requests:
+            cpu: 1
+          limits:
+            cpu: 1

@@ -1,0 +1,15 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: app3.zylowski.net
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+spec:
+  rules:
+  - host: app3.zylowski.net
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: my-nginx
+          servicePort: 80

@@ -1,0 +1,15 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: mem-www
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+spec:
+  rules:
+  - host: mem.zylowski.net
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: my-website
+          servicePort: 80

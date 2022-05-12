@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: stress
+spec:
+  containers:
+  - name: stress-container
+    resources:
+      requests:
+        memory: "512Mi"
+        cpu: "500m"
+      limits:
+        memory: "512Mi"
+        cpu: "500m"
+    image: progrium/stress
+    command: [ "stress", "--cpu", "2", "-v", "--timeout", "100s", "-m", "3" ]

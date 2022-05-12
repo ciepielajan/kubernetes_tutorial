@@ -1,0 +1,137 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Quiz</title>
+    <style>
+      html { min-height: 100%; } body { margin-left: auto; margin-right: auto; padding: 0; font-family: Helvetica, Arial, Sans-serif; font-size: 16px; position: relative; min-height: 100%; width: 680px; background-color: rgb(250, 250, 250); color: #333; } img { height: 400px; display: block; margin-left: auto; margin-right: auto; padding: 20px; } div .description { margin-top: 30px; } a { color: #000066; } div .selection { color: #000066; text-decoration: none; } div .selection:hover { text-decoration: underline; } span.right { color:#008800; } hr { width: 60%; margin-left: 0px; border: 0px; border-bottom: 1px solid #ccc; } fieldset { border: 0px; border-bottom: 2.5px solid #aaa; padding: 10px 20px; padding-left: 0px; margin-bottom: 0px; margin-top: 0px; } ol ul { padding-top: 10px; padding-bottom: 10px; } .selection { cursor: pointer; margin-top: 5px; } .multiple-selection { cursor: pointer; margin-top: 5px; } .correct-checkbox { color: #4F8A10; display: none; } .incorrect-checkbox { color: #D8000C; display: none; } legend { font-size: 19px; padding-left: 0px; } .response.wrong{ padding: 8px 10px; color: #D8000C; background-color: #FFBABA; } .response.right{ padding: 8px 10px; color: #4F8A10; background-color: #DFF2BF; } footer { font-size: 12px; margin-top: 0px; margin-bottom: 5px; bottom: 0; width: 100%; } label { display: block; padding-top: 5px; padding-bottom: 5px; } button { background: #bbb; border: 0px; color: #ffffff; font-size: 14px; padding: 6px 12px 6px 12px; text-decoration: none; } button:hover{ background: #ccc; } button:focus { outline: none; }
+    </style>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+          processEscapes: true
+        }
+      });
+    </script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML.js"></script>
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.2/styles/default.min.css">
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.2/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+    <script type="text/javascript">
+    $(document).ready(function(){
+      //close all the content divs on page load
+      $('.response').hide();
+
+      // toggle slide
+      $('.selection').click(function(){
+        // by calling sibling, we can use same div for all demos
+        $(this).siblings('.response').slideToggle('fast');
+      });
+
+      $('button').click(function(event){
+        var $target = $(event.target);
+        var $checkboxes = $target.parent('.mcq').find('input');
+        for (var i = 0; i < $checkboxes.length; i++) {
+          var $checkbox = $checkboxes.eq(i);
+          a = $checkbox;
+          if ($checkbox[0].checked && $checkbox.nextAll('.response').hasClass('right')) {
+            $checkbox.nextAll('.correct-checkbox').show();
+          } else if ($checkbox[0].checked &&
+              $checkbox.nextAll('.response').hasClass('wrong')) {
+            $checkbox.nextAll('.incorrect-checkbox').show();
+          } else if (!$checkbox[0].checked &&
+              $checkbox.nextAll('.response').hasClass('right')) {
+            $checkbox.nextAll('.incorrect-checkbox').show();
+          } else {
+            $checkbox.nextAll('.correct-checkbox').show();
+          }
+        }
+        $target.parent('.mcq').find('.response').slideToggle('fast');
+        if ($target.text() == 'Submit') {
+          $target.text('Hide');
+        } else {
+          $checkboxes.nextAll('.incorrect-checkbox').hide();
+          $checkboxes.nextAll('.correct-checkbox').hide();
+          $target.text('Submit');
+        }
+      });
+    });
+    </script>
+  </head>
+
+<body>
+  $\newcommand{\ones}{\mathbf 1}$
+  
+  <div>
+	<h1>Definicje w plikach YAML</h1>
+	<fieldset>
+		<legend>Obowiązkowe pola w każdym pliku YAML dla kubernetesa to:</legend>
+		<div>
+			<div class="description"></div>
+			<ol type="a">
+				<li class="choice">
+					<div class="selection">apiVersion, containerPort, kind, metadata/name, spec</div>
+					<div class="response wrong">
+						<span class="wrong">Odpowiedź błędna. </span>
+						
+					</div>
+				</li>
+				<li class="choice">
+					<div class="selection">apiVersion, kind, metadata/name, spec</div>
+					<div class="response right">
+						<span class="right">Odpowiedź poprawna! </span>
+						
+					</div>
+				</li>
+				<li class="choice">
+					<div class="selection">apiVersion, containerPort, kind, restartPolicy, metadata/name, spec</div>
+					<div class="response wrong">
+						<span class="wrong">Odpowiedź błędna. </span>
+						
+					</div>
+				</li>
+			</ol>
+		</div>
+	</fieldset>
+	<br/>
+	<fieldset>
+		<legend>'Wykonanie' pliku yaml na klastrze uzyskamy za pomocą:</legend>
+		<div>
+			<div class="description"></div>
+			<ol type="a">
+				<li class="choice">
+					<div class="selection">kubectl apply -f &lt;plik&gt;</div>
+					<div class="response right">
+						<span class="right">Odpowiedź poprawna! </span>
+						
+					</div>
+				</li>
+				<li class="choice">
+					<div class="selection">kubectl exec -f &lt;plik&gt;</div>
+					<div class="response wrong">
+						<span class="wrong">Odpowiedź błędna. </span>
+						
+					</div>
+				</li>
+				<li class="choice">
+					<div class="selection">kubectl deploy -f &lt;plik&gt;</div>
+					<div class="response wrong">
+						<span class="wrong">Odpowiedź błędna. </span>
+						
+					</div>
+				</li>
+			</ol>
+		</div>
+	</fieldset>
+	<br/>
+</div>
+
+  <footer>
+  
+  </footer>
+</body>
+</html>

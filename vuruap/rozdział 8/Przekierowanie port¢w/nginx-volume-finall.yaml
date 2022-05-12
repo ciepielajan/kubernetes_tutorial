@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-website
+  labels:
+    app: nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      initContainers:
+      - name: clean-and-download
+        image: cirrusci/wget
+        command: [ "sh", "-c", "rm -rf /www/* && wget https://gist.github.com/mzylowski/b4f87261c9ee968720edd5c266f99267/archive/06b065caf4b4520870d123f508115667d226641b.zip -O /www/package.zip && wget https://www.mememaker.net/api/bucket?path=static/img/memes/full/2018/Mar/16/16/k8s-729.png -O /www/mem.png && ls -la /www " ]
+        volumeMounts:
+        - mountPath: /www
+          name: http-content
+      - name: extract
+        image: garthk/unzip
+        command: ["unzip", "-j", "/www/package.zip", "-d", "/www/"]
+        volumeMounts:
+        - mountPath: /www
+          name: http-content
+      containers:
+      - name: hosting
+        image: nginx
+        volumeMounts:
+        - mountPath: /usr/share/nginx/html/
+          name: http-content
+      volumes:
+      - name: http-content
+        hostPath:
+          path: /tmp/www-content
+          type: DirectoryOrCreate

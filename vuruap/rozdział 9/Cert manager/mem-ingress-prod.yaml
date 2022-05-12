@@ -1,0 +1,21 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: mem.zylowski.net
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/issuer: "letsencrypt-prod"
+spec:
+  tls:
+  - hosts:
+    - mem.zylowski.net
+    secretName: mem.zylowski.net
+  rules:
+  - host: mem.zylowski.net
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: my-website
+          servicePort: 80
+

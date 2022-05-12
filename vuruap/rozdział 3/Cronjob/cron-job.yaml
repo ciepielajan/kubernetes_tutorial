@@ -1,0 +1,15 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: downloader-cron
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+          - name: downloader-container-cron
+            image: pstauffer/curl
+            command: ["curl", "-s", "http://wttr.in/Gdansk"]

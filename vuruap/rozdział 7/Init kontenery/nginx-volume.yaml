@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-website
+  labels:
+    app: nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: hosting
+        image: nginx
+        volumeMounts:
+        - mountPath: /usr/share/nginx/html/
+          name: http-content
+      volumes:
+      - name: http-content
+        hostPath:
+          path: /tmp/www-content
+          type: DirectoryOrCreate

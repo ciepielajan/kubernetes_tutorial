@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: sleep-ds
+spec:
+  selector:
+    matchLabels:
+      name: sleep-ds
+  template:
+    metadata:
+      labels:
+        name: sleep-ds
+    spec:
+      nodeSelector:
+        gpu: "true"
+      containers:
+        - image: ubuntu:18.04
+          name: sleeper
+          command: [ "sleep", "inf" ]

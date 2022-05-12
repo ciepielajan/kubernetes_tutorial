@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sleep-and-exit
+  labels:
+    app: sleeper
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sleeper
+  template:
+    metadata:
+      labels:
+        app: sleeper
+    spec:
+      containers:
+      - name: ubuntu
+        env:
+        - name: SLEEP_TIME
+          value: "10"
+        - name: EXIT_CODE
+          value: "2"
+        image: ubuntu:18.04
+        command: [ "/bin/sh", "-c"]
+        args: ["sleep $(SLEEP_TIME) && exit $(EXIT_CODE)"]

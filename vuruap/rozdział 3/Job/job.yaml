@@ -1,0 +1,12 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: downloader
+spec:
+  template:
+    spec:
+      containers:
+      - name: yt-downloader
+        image: wernight/youtube-dl
+        command: ["youtube-dl", "https://www.youtube.com/watch?v=pHwt5oC7_lQ"]
+      restartPolicy: Never
