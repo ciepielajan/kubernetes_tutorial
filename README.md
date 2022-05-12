@@ -12,6 +12,9 @@ https://helion.pl/ksiazki/kubernetes-kurs-video-wdrazanie-aplikacji-michal-zylow
 
 ### 1.2. O Kubernetesie w kilka minut
 
+
+![](/src/img/kubernetes-control-plane.png)
+
 ### 1.3. Środowisko potrzebne do pracy z kursem, cz. 1.
 
 ### 1.4. Środowisko potrzebne do pracy z kursem, cz. 2.
