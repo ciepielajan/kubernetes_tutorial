@@ -1,4 +1,4 @@
-# kubernetes utorial
+# Kubernetes tutorial
 https://helion.pl/ksiazki/kubernetes-kurs-video-wdrazanie-aplikacji-michal-zylowski,vuruap.htm
 
 
