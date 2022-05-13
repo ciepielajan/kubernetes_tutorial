@@ -153,7 +153,7 @@ kubectl describe pod nginx
 Usunięcie PODa
 ```bash
 # nginx - nazwa poda
-kubectl delete pod nginx
+kubectl delete po nginx
 ```
 sprawdzenie
 ```bash
@@ -163,6 +163,41 @@ kubectl get pods
 ![pod_delete](/src/img/pod_delete.png)
 
 ### 2.3. Definicje w plikach yaml
+
+Utworzenie pliku yaml
+
+można bezpośrednio w terminalu przez program `vim`
+```bash
+vim pierwszy.yaml
+```
+
+
+```yaml
+apiVersion: v1
+kind: Pod # uruchamiamy poda
+metadata:
+        name: nginx #nazwa PODa
+spec:
+        containers:
+        - name: nginx-container # nazwa dla kontenera
+          image: nginx1.17.2  # obraz nginx`a
+
+```
+
+Uruchomienie pliku 
+```bash
+kubectl apply -f pierwszy.yaml
+```
+
+Sprawdzenie czy pod został utworzony
+```bash
+kubectl get pods
+```
+
+![yaml_vim.png](src/img/yaml_vim.png)
+
+
+
 
 ### 2.4. Wykonywanie poleceń w kontenerach
 
