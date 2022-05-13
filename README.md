@@ -334,15 +334,101 @@ kubectl logs logs-learning -c nginx -f
 
 ### 3.1. Pod, cz. 1.
 
+
+**POD**
+
+![pod](src/img/pod.jpeg)
+
+Pojemnik, który musi mieć przynajmniej jeden kontener oraz stały adres IP. 
+
+Do PODa można podłączyć **volumen**, który służy do podłączenia przestrzeni dyskowych, aby aplikacja mogła przechowywać dane. POD może mieć wiele konternerów oraz podłączony volumen współdzieli przestrzeń dyskową ze wszystkimi konterenami w danym PODzie. 
+
+
+**NODE**
+
+![node](src/img/node.jpeg)
+
+
+
 ### 3.2. Pod, cz. 2.
- 
+
 ### 3.3. Pod, cz. 3.
 
 ### 3.4. ReplicationController/ReplicaSet i skalowanie, cz. 1.
 
+**Replikacja**, czyli uruchamianie kopii danego PODa wielokrotnie. Najlepiej na róznych Nodach (węzłach). Dzięki niej aplikacja są niezwodne, równoważą obciążenia serwera oraz są skalowalne. 
+
+Przykład zastosowania:
+nginx hostujący sklep intenetowy.
+
+* **niezawodność** - Programista zepsuł kod powodujać błąd na stronie. Możemy uruchomic X replik na klastrze. Mimo problemu w jednym klastrze mamy uruchomione kopie kolejnego
+
+* **równowaznenie obciążenia** - Okres świąteczny, zmożony ruch klientów możemy kierować ruch na inne kopie sklepu. 
+
+* **skalowalność** - szybkie zwiększenie lub zminejszenie ilości replik (PODów). Nawet równowarząc po równo ruch nie pomaga, potrzebujemy więcej replik 
+
+
+
+
+**ReplicationController**  - Obiekt pilnujący, aby akutalnie było uruchomionych tyle replik ile zdefiniowaliśmy. Bardzo żadko używany poniważ obiekt Deployment korzysta z jego odpowiednika ReplicationSet i robi to w sposób automatyczny. 
+
+
+
 ### 3.5. ReplicationController/ReplicaSet i skalowanie, cz. 2.
+ReplicationController - case
 
 ### 3.6. ReplicationController/ReplicaSet i skalowanie, cz. 3.
+ReplicaSet - case
+
+utworz plik ReplicaSet
+
+Jako ustawienia przyjmij utworzenie **5 replik**
+
+```bash
+vim rs.yaml
+```
+
+```yaml
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: httpd-rs
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: httpd-app-rs
+  template:
+    metadata:
+      name: httpd-pod-rs
+      labels:
+        app: httpd-app-rs
+    spec:
+      containers:
+      - name: httpd-container
+        image: httpd
+        ports:
+        - containerPort: 80
+```
+Uruchomienie Poda
+```bash
+kubectl apply -f rs.yaml
+
+#sprawdznie ilosci podów
+kubectl get po
+```
+![pod_scale](src/img/pod_scale_1.png)
+
+
+Zredukowanie PODów do **3 replik** 
+
+```bash
+kubectl  scale rs --replicas=3 httpd-rs
+
+#sprawdznie ilosci podów
+kubectl get po
+```
+![pod_scale](src/img/pod_scale_2.png)
 
 ### 3.7. Deployment i RollingUpdate, cz. 1.
 
