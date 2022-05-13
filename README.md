@@ -264,6 +264,72 @@ ps aux
 
 ### 2.5. Pobieranie logów Poda
 
+Uruchomienie PODa z dwoma kontenerami 
+```bash
+vim logs.yaml
+```
+
+```yaml
+apiVersion: v1
+kind: Pod # uruchamiamy poda
+metadata:
+        name: logs-learning #nazwa PODa
+spec:
+        containers:
+        - name: ubuntu # nazwa dla kontenera
+          image: ubuntu:18.04  # obraz nginx`a
+          command: ["sleep","inf"]
+        - name: nginx
+          image: nginx
+          ports:
+            - containerPort: 80
+```
+```bash
+# uruchomienie PODa )
+kubectl apply -f logs.yaml
+```
+
+Pobieranie logów z Poda
+```bash
+# -f powodnuje tryb czuwania, kazdy nowy log od razu się wyświteli. Uniemożliwa dalszą prace w danym okienku bez wyłączenia tego tryby (ctr+c)
+kubectl logs logs-learning -c nginx -f
+```
+*symulacja logów* 
+instaluje w danym kontenerze biblioteke `curl`, w celu pobierania stron wwww. - Komunikacja z nimi będzi zapisywana w logach
+```bash
+kubectl exec -c ubuntu -it logs-learning -- bash
+```
+Upewnienie się czy jesteśmy na poprwanym kontenerze
+```bash
+cat /etc/os-release
+```
+Akutalizacja systemu i pobranie biblioteki curl
+```bash
+apt update && apt install curl
+```
+Sprawdzenie jaki IP ma nasz POD
+```bash
+# sekcja IP
+kubectl describe pod logs-learning
+```
+Pobranie strony dwukrotnie
+```bash
+curl 172.17.0.3
+curl 172.17.0.3
+```
+Odczytanie logów
+```bash
+apt update && apt install curl
+```
+
+
+```bash
+kubectl logs logs-learning -c nginx -f
+```
+![pod_logs](src/img/pod_logs.png)
+
+
+
 ## 3. Obiekty w Kubernetesie
 
 ### 3.1. Pod, cz. 1.
