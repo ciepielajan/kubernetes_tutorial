@@ -72,6 +72,52 @@ minikube start
 
 ### 2.1. Jak działa i czym jest kub
 
+Wejście do basha minikuba
+```bash
+minikube ssh
+```
+
+info minikube
+```bash
+cat /etc/os-release
+```
+
+lista uruchomionych usług w kubernetesie niezbędne do jego działania
+```bash
+docker ps
+```
+![uruchomione_uslugi](/src/img/uruchomione_uslugi.png) 
+
+
+Sprawdzenie czy api server kubernetesa działa
+
+```bash
+docker ps | grep apiserver
+```
+![apiserver](/src/img/apiserver.png)  
+
+Powrót do terminala 
+```bash
+exit
+```
+
+Informacje o konfiguracji klastra
+
+m.in.: port, użytkownik, nazwa, certyfikat, wersja 
+
+przeniesienie tego pliku z tego miejsca nie pozowli na odpalenie klastra
+
+```bash
+cd ~/.kube/
+cat config
+```
+![apiserver](/src/img/kube_config.png)  
+
+W przypadku wielu klastrów i plików konfiguracyjnych należy zmienić tylko zmienną w pliku konfiguracyjnym.
+```bash
+# export KUBECONFIG=~/lokazliacja_pliku_konfiguracyjnego_danego_klastra.yaml
+export KUBECONFIG=~/Public/3node-claster.yaml
+```
 
 
 ### 2.2. Pierwszy kontener
