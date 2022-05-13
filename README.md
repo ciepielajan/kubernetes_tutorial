@@ -201,6 +201,67 @@ kubectl get pods
 
 ### 2.4. Wykonywanie poleceń w kontenerach
 
+Odczytanie wszystkich parametrów uruchomieniowych dany PAD
+
+Nie podane parametry w pliku .yaml zostają nadpisane domyślinymi parametrami. 
+```bash
+vim ubuntu-cmd.yaml
+```
+
+```yaml
+apiVersion: v1
+kind: Pod # uruchamiamy poda
+metadata:
+        name: ubuntu-cmd #nazwa PODa
+spec:
+        containers:
+        - name: ubuntu # nazwa dla kontenera
+          image: ubuntu:18.04  # obraz nginx`a
+          command: ["sleep","inf"] # komendy jakie mają się wykonac po uruchomieniu kontenrera. Jeżli ich nie bedzie kontener zostanie od razu zamknięty. "sleep","int" - pozostań włączony w nieskończoność bez żadnych komend. 
+```
+```bash
+# uruchomienie PODa (zeszkudżelowanie :) )
+kubectl apply -f ubuntu-cmd.yaml
+```
+```bash
+# odczyt wszystkich (nawet tych domyślnych) parametrów 
+kubectl edit po ubuntu
+```
+![yaml_defoult_running](src/img/yaml_defoult_running_1.png)
+![yaml_defoult_running](src/img/yaml_defoult_running_2.png)
+![yaml_defoult_running](src/img/yaml_defoult_running_3.png)
+
+
+Aby uruchomić program w działającym kontenerze nalezy skorzystać z polecenia kubectl exec.
+
+* W przypadku gdy POD zawiera jeden kontener wystarczy wyspecifikować nazwę POD'a: `kubectl exec [POD_NAME] [COMMAND]`.
+
+* Gdy POD posiada kilka kontenerów musimy wskazać właściwy za pomocą opcji `-c`: `kubectl exec [POD_NAME] -c [CONTAINER_NAME] [COMMAND]`. Listę kontenerów i ich nazwy można uzyskać poprzez wpisanie polecenia `kubectl describe [POD_NAME]`.
+
+
+Lista folderów głownego katalogu danego kontenera
+```bash
+kubectl exec ubuntu-cmd ls 
+```
+
+Lista procesów uruchomionych na kontenerze 
+```bash
+kubectl exec ubuntu-cmd ps aux
+```
+
+
+Opcja `-it` (interaktywna - uruchomienie basha kontenera) pozwala nam na 'wejście' do działającego kontenera.
+```bash
+kubectl exec -it ubuntu-cmd bash
+```
+
+```bash
+ls
+ps aux
+```
+![kube_exec](src/img/kube_exec.png)
+
+
 ### 2.5. Pobieranie logów Poda
 
 ## 3. Obiekty w Kubernetesie
