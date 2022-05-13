@@ -113,6 +113,7 @@ cat config
 ```
 ![apiserver](/src/img/kube_config.png)  
 
+
 W przypadku wielu klastrów i plików konfiguracyjnych należy zmienić tylko zmienną w pliku konfiguracyjnym.
 ```bash
 # export KUBECONFIG=~/lokazliacja_pliku_konfiguracyjnego_danego_klastra.yaml
@@ -121,6 +122,45 @@ export KUBECONFIG=~/Public/3node-claster.yaml
 
 
 ### 2.2. Pierwszy kontener
+
+Uruchoemienie konternera to tak naprawdę uruchoemienie PODa (pojemnik na konternery). W jednym PODdzie możemy uruchomić wiele konternerów i zarządzać nimi jako grupą. 
+
+`nginx` - Typ kontenera. Aplikacja do hostowania treści internetowych oraz wystawiania PROXy (tunelowania połączeń miedzy stronami wewnątrz klastrów)
+
+```bash
+# kubectl run NAZWA_PODA
+# --image = jaki obraz ma być użyty
+# --restart = Never  - bez tego domyślnie uruchomi tryp deploment
+
+kubectl run nginx --image=nginx --restart=Never
+```
+
+
+sprawdzenie czy poprawnie uruchomiono PODy
+```bash
+kubeclt get pods
+```
+![apiserver](/src/img/pod.png)  
+
+Szczegółowe informacje dotyczące uruchomionego PODu. Np do którego węzła został przypisany. 
+
+```bash
+# kubeclt describe pod NAZWA PODu
+kubectl describe pod nginx
+```
+![apiserver](/src/img/pod_describe.png)  
+
+Usunięcie PODa
+```bash
+# nginx - nazwa poda
+kubectl delete pod nginx
+```
+sprawdzenie
+```bash
+kubectl get pods
+```
+
+![pod_delete](/src/img/pod_delete.png)
 
 ### 2.3. Definicje w plikach yaml
 
@@ -133,7 +173,7 @@ export KUBECONFIG=~/Public/3node-claster.yaml
 ### 3.1. Pod, cz. 1.
 
 ### 3.2. Pod, cz. 2.
-
+ 
 ### 3.3. Pod, cz. 3.
 
 ### 3.4. ReplicationController/ReplicaSet i skalowanie, cz. 1.
