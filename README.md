@@ -552,6 +552,53 @@ kubectl delete deployment httpd-dep
 
 ### 3.11. Job
 
+**Job** w kubernetesie to byty odpowiedzialne za jednorazowe uruchamianie zadań i nie podtrzymywanie poda przy życiu gdy ten poprawnie zakończy swoją pracę.
+
+`Przykładowe zastosowanie` - Pobranie z platformy XYZ filmów. Można do tego zadanie użyć klaster kubernetesa ze względu na odpowiednią ilość przestrzeni dyskowej oraz przepustowości łącza.
+
+Obraz dockerowy
+https://hub.docker.com/r/wernight/youtube-dl
+
+Github
+https://github.com/wernight/docker-youtube-dl
+
+Utworzenie pliku
+```bash
+vim job.yaml
+```
+```yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: downloader
+spec:
+  template:
+    spec:
+      containers:
+      - name: yt-downloader
+        image: wernight/youtube-dl # skopiowane z github twóry aplikacji 
+        command: ["youtube-dl", "https://www.youtube.com/watch?v=pHwt5oC7_lQ"]
+      restartPolicy: Never
+```
+Uruchomienie PODa
+```bash
+kubectl apply -f job.yaml
+# sprawdzenie
+kubectl get job
+kubectl get po
+```
+
+Prawdzenie `kolumny Message w części Events` dla każdego elementu
+```bash
+kubectl describe job
+kubectl describe job downloader
+#pod
+kubectl describe po downloader-5bzzt
+```
+
+
+
+
 ### 3.12. CronJob
 
 ### 3.13. Namespace
