@@ -432,11 +432,120 @@ kubectl get po
 
 ### 3.7. Deployment i RollingUpdate, cz. 1.
 
+**Deployment**
+Używamy go zawsze kiedy chcemy aby nasza aplikacja działałą stale
+
+```bash
+vim deployment.yaml
+```
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: httpd-dep
+  labels:
+    app: httpd-app
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: httpd-app
+  template: 
+    metadata:
+      labels:
+        app: httpd-app
+    spec:
+      containers:
+      - name: httpd 
+        image: httpd
+        ports:
+        - containerPort: 80
+```
+![deployment](src/img/deployment.png)
+![rs](src/img/rs.png)
+
+
 ### 3.8. Deployment i RollingUpdate, cz. 2.
+
+TIP konsola bash podzielona na na wiele okien aby kontrolowa wszystko naraz
+```bash
+tmux
+# podstawowy skrót skórt ctrl+b inicjuje wejście do zarządzania oknami, uruchomiamy go przed kazdy poniższym
+# shift+5 (czyli %) - podział ekranu pionowo
+# shift+" (czyli ") - podział ekranu poziomo
+# ctrl+(strzałka) - zmiana wielkości okien
+# (strzałka) - przechodzenie pomiędzy oknami 
+# ctrl+z - zoom na dany panel powrót ta sama komenda
+# exit - usun 
+# c - utworz nową zakładkę z nowym oknem(stare bedzie zachowane)
+# p - (prev) - przełącz zakładkę na poprzedni
+# n - (next) - przełącz zakładkę na nastepne
+
+
+# okno 4
+watch -n 1 "kubectl get po"
+# okno 3
+watch -n 1 "kubectl get deployments"
+# okno 2
+watch -n 1 "kubectl get rs"
+# okno 1 - posłuży do wydawania koment
+```
+
+![tmux](src/img/tmux.png)
+
+**Zmiana wersje naszego obrazu**
+```bash
+#--record=true  (zapisze informacje o zmianie)
+kubectl set image deployment httpd-dep httpd=httpd:2.4 --record=true
+```
+
+**Podgląd najważniejszych parametrów**
+
+```bash
+kubectl describe deployment httpd-dep
+```
+![httpd-dep](src/img/httpd-dep.png)
+
+
+
 
 ### 3.9. Deployment i RollingUpdate, cz. 3.
 
+**lista komend rolloutowych**
+```bash
+kubectl rollout
+```
+![rollout-cmd](src/img/rollout-cmd.png)
+
+
+
+**Podgląd listy ostatnich rolloutów**
+```bash
+kubectl rollout history deployment httpd-dep
+```
+
+![rollout-history](src/img/rollout-history.png)
+
+
+**Wycofanie rolloutu Deploymentu** - ostatnio wprowadzonych zmian z listy 
+```bash
+kubectl rollout undo deployment httpd-dep
+```
+![rolloup-status](src/img/rolloup-undo.png)
+
+
+**Sprawdzenie Deploymenty działają poprawnie** 
+```bash
+kubectl rollout status deployment httpd-dep
+```
+![rolloup-undo](src/img/rolloup-status.png)
+
+
 ### 3.10. Deployment i RollingUpdate, cz. 4.
+
+
+
 
 ### 3.11. Job
 
