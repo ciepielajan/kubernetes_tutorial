@@ -544,8 +544,11 @@ kubectl rollout status deployment httpd-dep
 
 ### 3.10. Deployment i RollingUpdate, cz. 4.
 
-
-
+**Usunięcie / Przerwanie działania Deploymentu**
+```bash
+kubectl delete deployment httpd-dep
+```
+![delete](src/img/delete.png)
 
 ### 3.11. Job
 
