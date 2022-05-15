@@ -596,7 +596,7 @@ kubectl describe job downloader
 kubectl describe po downloader-5bzzt
 ```
 
-> **BŁĄD** robiąc dokładnie co prowadzący kurs. POD powinien być jeden ze statusem "Completed" (`get po`), natomiast  kolumna "completions" w `get jobs` powinna mieć wartość 1/1. Poniżej wszystkie parametry mogące pomoc namierzyć błąd. 
+> **BŁĄD**: Robiąc dokładnie co prowadzący kurs. POD powinien być jeden ze statusem "Completed" (`get po`), natomiast  kolumna "completions" w `get jobs` powinna mieć wartość 1/1. Poniżej wszystkie parametry mogące pomoc namierzyć błąd. 
 > 
 > *Moja sugestia. Kurs był robiony w 2019, Skrypt z docker hub również. Miedzy czasie mogły powstać nowe wymogi dotyczące pobierania filmów z YouTuba (np indywidualne api). Przez co mimo poprawnej implementacji skypt nie może pobrać filmu z platformu.*
 ![bug1](src/img/bug1.png)![bug2](src/img/bug2.png)![bug3](src/img/bug3.png)
@@ -605,7 +605,75 @@ kubectl describe po downloader-5bzzt
 
 ### 3.12. CronJob
 
+**CronJob** pozwala na uruchomienie JOBa o określonej godzinie/dacie. 
+
+Powiązana literatura:
+* **Crontab.guru - Pomga zaplanować harmonogram !!!** Do nauki opisywania harmonogramów - https://crontab.guru/
+* Kubernetes CronJob - https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/
+* Uruchamianie CronJobów - https://kubernetes.io/docs/tasks/job/automated-tasks-with-cron-jobs/
+* API CronJoba w kubernetesie - https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.15/#job-v1-batch
+
+
+**Przykład - pobieranie pogody**
+CronJob, który co minutę będzie uruchamiała Joba pobierającego informacje pogodowe
+
+Github aplikacji - https://github.com/chubin/wttr.in
+
+
+
+```bash
+vim cron-job.yaml
+```
+
+```yaml
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: downloader-cron
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+          - name: downloader-container-cron
+            image: pstauffer/curl
+            command: ["curl", "-s", "http://wttr.in/Gdansk"]
+```
+
+![cronjobs](src/img/cronjobs.png)
+* kubectl get cronjobs / kubectl get cj - status działającego cron-joba
+* kubectl get job - akutalne statusy urachamianych jobów
+* kubectl get po - statusy uruchamianych podów. W kolumnie AGE widać jak co 60sec zostaje uruchomiony nowy JOB, które stworzyły PODy. 
+
+**Podgląd działania scryptu w logach**  - poniważ scrypt zwraca dane do terminla
+```bash
+# pobranie nazwy z listy PODów (kubectl get po)
+kubectl logs downloader-cron-27543622-mpldp
+```
+![cron-logs](src/img/cron-logs.png)
+
+**usunięcie cron-joba**
+```bush
+kubectl delete cj downloader-cron
+```
+
+
+
 ### 3.13. Namespace
+
+**Namespace** - pozwala na logiczne dzielenie klastra na części. Dzięki czemu w jednym klastrze może działać wiele obiektów.
+
+* Kubernetes Namespace - https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/
+* Praca z przestrzeniami nazw - https://kubernetes.io/docs/tasks/administer-cluster/namespaces/
+* Omówienie przestrzeni nazw - https://kubernetes.io/docs/tasks/administer-cluster/namespaces-walkthrough/
+* API przestrzeni nazw w kubernetesie - https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.15/#namespace-v1-core
+
+
+
+
 
 ### 3.14. Pod: Zmienne środowiskowe
 
