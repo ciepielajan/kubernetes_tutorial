@@ -776,9 +776,190 @@ kubectl get po --all-namespaces
 
 ### 3.14. Pod: Zmienne środowiskowe
 
+```bash
+vim env.yaml
+```
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ubuntu-env
+spec:
+  containers:
+  - name: ubuntu
+    image: ubuntu:18:04
+    command: ["env"]  #cmd env listuje wszystkie zmienne środowiskowe
+  restartPolicy: Never
+```
+Wypisanie zmiennych
+```bash
+kubectl logs ubuntu-env
+```
+
+![po cmd](src/img/pocmd.png)
+
+**Dodanie własnych zmiennych środowiskowych**
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ubuntu-my-envs
+spec:
+  containers:
+  - name: ubuntu
+    env:
+    - name: SLEEP_TIME
+      value: "10"
+    - name: EXIT_CODE
+      value: "2"
+    image: ubuntu:18.04
+    command: ["env"]
+  restartPolicy: Never
+```
+```bash
+kubectl logs ubuntu-my-envs
+```
+
+![po cmd](src/img/env.png)
+
+**Użycie zmiennych środowiskowych w aplikacji**
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ubuntu-my-envs
+spec:
+  containers:
+  - name: ubuntu
+    ########start
+    env:
+    - name: SLEEP_TIME
+      value: "10"
+    - name: EXIT_CODE
+      value: "0"    #status zakończenia aplikacji. Ona definiuje jaki będzie status w get po . 0=Completed , 2=Error
+    ########end
+    image: ubuntu:18.04
+    command: ["/bin/sh", "-c"]   # uruchomienie shella, parametr -c onacza niezależne linuxowe polecenia
+    args: ["sleep $(SLEEP_TIME) && exit $(EXIT_CODE)"]  # cmd linuxowe z naszymi zmiennymi 
+  restartPolicy: Never
+```
+![envmyc](src/img/envmyc.png)
+
+
+**POBRANIE DANYCH Z VOLUMENU**
+
+Lokalizacja klucza minikuba za pomocą którego zalogujemy sie do volumenu
+```bash
+minikube ssh-key
+```
+
+Adres IP 
+```bash
+minikube ip
+```
+
+![ip](src/img/ip.png)
+
+**Pobieranie/Kopiowanie plików z VM**
+```bash
+scp -i $(minikube ssh-key) docker@$(minikube ip): /files/<nazwa_pliku.rozszerzenie> .
+```
+![copy](src/img/copy.png)
+
+
+
 
 
 ### 3.15. Pod: Volumeny
+
+**VOLUMENY** pozwalają zamontować przestrzeń dyskową do podów.
+
+```yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: downloader
+spec:
+  template:
+    spec:
+      containers:
+      - name: yt-downloader
+        image: wernight/youtube-dl
+        command: ["youtube-dl", "https://www.youtube.com/watch?v=iaN8X3p9gso"]
+        ########start
+        # sekcja łącząca dany kontenter z danym volumenem
+        volumeMounts:
+        - mountPath: /downloads  # miejsce w konterze w którym dany katalog ma się podmątować 
+          name: first-volume #nazwa (ta sama co w sekcji volumes )
+        ########end
+      restartPolicy: Never
+      ########start
+      volumes:
+      - name: first-volume   #nazwa (ta sama co w sekcji volumeMounts )
+        hostPath:
+          path: /files     # ścieżka 
+          type: Directory  # zapisz w folderze
+      ########end
+```
+
+```bash
+kubectl apply -f job-volume.yaml
+```
+![volumen](src/img/volumen.png)
+
+*Po utworzeniu PODA i sprawdznie jego statusu "containerCreating" chcemy sprawdzić dlaczego tak długo jest tworzony. W tym celu zaglądamy do środka danego poda*
+
+```bash
+kubectl describe po downloader-6b6bd
+```
+![vd](src/img/vd.png)
+
+*Po Age (x9) widać, że było wiele prób które skończyły się "FailMount". Message mówi, że /file nie jest katalogiem. Przyczyną tego błędu jest to, że dany folder nie istnieje.*
+
+**Rozwiązanie 1:** Utworzneie ręcznie katalogu
+
+```bash
+minikube ssh
+sudo mkdir /files
+exit
+```
+![mini kube](src/img/mks.png)
+
+Usunięcie błędnego PODu
+```bash
+kubectl delete po downloader-6b6bd
+```
+Sprawdznie usnięcia
+```bash
+kubectl get po
+```
+Ponownie uruchomienie PODa - teraz po utworzeniu katalogu
+```bash
+kubectl apply -f job-volume.yaml
+```
+
+![podnew](src/img/podnew.png)
+
+
+> **BŁAD** ponownie jak przy poprzeniej próbie pobrania plików z YT wystepuje błąd pobrania. Przez co nie możemy przetestowac zapisania w danym volumenie !  *Spróbuj pobrać jakieś zdjęcie i zapisz je w danym volumenie*
+>
+> Sprawdzenie czy pliki zostały pobrane
+>
+> ![volumen bug](src/img/vbug.png)
+
+
+
+**Rozwiązanie 2:** Zmiana w pliku .yaml parametru `type: Directory` na `type: DirectoryOrCreate`
+
+
+
+
+
+
+
+
 
 ### 3.16. Secrets
 
