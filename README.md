@@ -598,10 +598,8 @@ kubectl describe po downloader-5bzzt
 
 > **BŁĄD** robiąc dokładnie co prowadzący kurs. POD powinien być jeden ze statusem "Completed" (`get po`), natomiast  kolumna "completions" w `get jobs` powinna mieć wartość 1/1. Poniżej wszystkie parametry mogące pomoc namierzyć błąd. 
 > 
-> *Moja sugestia. Kurs był robiony w 2019. Miedzy czasie mogły powstać nowe wymogi dotyczące pobierania filmów z YouTuba (np indywidualne api). Przez co mimo poprawnej implementacji skypt nie może pobrać filmu z platformu.*
+> *Moja sugestia. Kurs był robiony w 2019, Skrypt z docker hub również. Miedzy czasie mogły powstać nowe wymogi dotyczące pobierania filmów z YouTuba (np indywidualne api). Przez co mimo poprawnej implementacji skypt nie może pobrać filmu z platformu.*
 ![bug1](src/img/bug1.png)![bug2](src/img/bug2.png)![bug3](src/img/bug3.png)
-
-
 
 
 
