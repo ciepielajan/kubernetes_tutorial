@@ -664,7 +664,7 @@ kubectl delete cj downloader-cron
 
 ### 3.13. Namespace
 
-**Namespace** - pozwala na logiczne dzielenie klastra na części. Dzięki czemu w jednym klastrze może działać wiele obiektów.
+**Namespace** - pozwala na logiczne dzielenie klastra na części. Dzięki czemu w jednym klastrze może działać wiele obiektów. Domyślnie każdy obiekt ma przypisaną *namespace* na defoult.
 
 * Kubernetes Namespace - https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/
 * Praca z przestrzeniami nazw - https://kubernetes.io/docs/tasks/administer-cluster/namespaces/
@@ -672,10 +672,111 @@ kubectl delete cj downloader-cron
 * API przestrzeni nazw w kubernetesie - https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.15/#namespace-v1-core
 
 
+```bash
+kubectl get namespaces   # lub skrót kubectl get ns
+```
 
+**Utworzenie nowego NAMESPACE**
+
+```bash
+kubectl create ns test
+```
+sprawdzenie
+```bash
+kubectl get ns 
+```
+![namespace](src/img/namespace.png)
+
+**Utworzenie NAMESPACE za pomocą pliku .yaml**
+```bash
+vim ns.yaml
+```
+```yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: yaml
+```
+aktywowanie pliku
+```bash
+kubectl apply -f ns.yaml
+```
+
+![namespace vim](src/img/ns_vim.png)
+
+**Uruchomienie PODu w danym NAMESPACE**
+```bash
+kubectl apply -f deployment.yaml -n test
+```
+
+**Wyświetlanie obiektów NAMESPACEów**
+Aby zobaczyć jakie PODy są w *namespace* do polecenia get należy dopisać nazwę *namespacu*. Domyślnie wyświetlany jest widok namespace defolut. Podobnie robimy przy innych obiektach. 
+```bash
+kubectl get po -n test
+```
+![nspod](src/img/nspod.png)
+
+**Przypisanie obiektu do danego namespacu**
+```bash
+vim deployments.yaml
+```
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: yaml #nazwa namespacu
+  name: httpd-dep
+  labels:
+    app: httpd-app
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: httpd-app
+  template:
+    metadata:
+      labels:
+        app: httpd-app
+    spec:
+      containers:
+      - name: httpd
+        image: httpd
+        ports:
+        - containerPort: 80
+```
+```bash
+kubectl apply -f deployment.yaml -n yaml
+```
+```bash
+kubectl get po -n yaml
+```
+![nspod](src/img/ns_yaml_2.png)
+
+
+**Wylistowanie WSZYSTKICH PODów ze WSZYSTKICH NAMESPACEów**
+```bash
+kubectl get po --all-namespaces
+```
+![ns all](src/img/nsall.png)
+
+*NAMESPACE "kube-system" są wewnętrznymi PODami kubernetesa
+
+**usunięcie danych NAMESPACE**
+```bash
+kubectl delete ns test
+```
+podgląd zmian
+```bash
+kubectl get po --all-namespaces
+```
+![ns delete](src/img/nsdelete.png)
+
+*UWAGA - zostaje również usunięty są POD*
 
 
 ### 3.14. Pod: Zmienne środowiskowe
+
+
 
 ### 3.15. Pod: Volumeny
 
