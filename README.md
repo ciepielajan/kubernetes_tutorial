@@ -576,7 +576,7 @@ spec:
     spec:
       containers:
       - name: yt-downloader
-        image: wernight/youtube-dl # skopiowane z github twóry aplikacji 
+        image: wernight/youtube-dl
         command: ["youtube-dl", "https://www.youtube.com/watch?v=pHwt5oC7_lQ"]
       restartPolicy: Never
 ```
@@ -588,13 +588,19 @@ kubectl get job
 kubectl get po
 ```
 
-Prawdzenie `kolumny Message w części Events` dla każdego elementu
+Sprawdzenie `kolumny Message w części Events` dla każdego elementu
 ```bash
 kubectl describe job
 kubectl describe job downloader
 #pod
 kubectl describe po downloader-5bzzt
 ```
+
+> **BŁĄD** robiąc dokładnie co prowadzący kurs. POD powinien być jeden ze statusem "Completed" (`get po`), natomiast  kolumna "completions" w `get jobs` powinna mieć wartość 1/1. Poniżej wszystkie parametry mogące pomoc namierzyć błąd. 
+> 
+> *Moja sugestia. Kurs był robiony w 2019. Miedzy czasie mogły powstać nowe wymogi dotyczące pobierania filmów z YouTuba (np indywidualne api). Przez co mimo poprawnej implementacji skypt nie może pobrać filmu z platformu.*
+![bug1](src/img/bug1.png)![bug2](src/img/bug2.png)![bug3](src/img/bug3.png)
+
 
 
 
