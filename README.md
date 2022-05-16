@@ -1400,8 +1400,6 @@ kubectl get nodes -o wide
 
 
 
-
-
 ### 5.2. Google Kubernetes Engine, cz. 1.
 
 ### 5.3. Google Kubernetes Engine, cz. 2.
@@ -1418,6 +1416,9 @@ kubectl get nodes -o wide
 
 ### 5.9. DaemonSet
 
+
+
+
 ## 6. Jak działa Kubernetes
 
 ### 6.1. Architektura rozwiązania
@@ -1428,6 +1429,10 @@ kubectl get nodes -o wide
 
 ### 6.4. Pody statyczne
 
+
+
+
+
 ## 7. Kolejne funkcjonalności Kubernetesa
 
 ### 7.1. Etykiety i selektory
@@ -1437,6 +1442,9 @@ kubectl get nodes -o wide
 ### 7.3. Security context
 
 ### 7.4. Żądanie i limitowanie zasobów
+
+
+
 
 ## 8. Sieć na klastrze i wystawianie usług na zewnątrz
 
@@ -1449,6 +1457,11 @@ kubectl get nodes -o wide
 ### 8.4. NodePort
 
 ### 8.5. LoadBalancer
+
+
+
+
+
 
 ## 9. Klaster z dodatkowymi narzędziami
 
