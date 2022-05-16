@@ -956,12 +956,168 @@ kubectl apply -f job-volume.yaml
 
 
 
-
-
-
-
-
 ### 3.16. Secrets
+
+**Secret** słóżą do przekazywania poufnych danych (np.:login, hasło)
+
+```bash
+vim secret.yaml
+```
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: db-secret
+data:
+  # całość zakodowana w base64 - np echo -n "TajneHasło" | base64
+  user: "cm9vdA=="
+  pass: "VGFqbmVIYXPFgm8="
+stringData:
+  ip: "10.102.108.222"
+```
+
+Zakodowanie .... jako root
+```bash
+# -n = nie bierz pod uwagę znaków końca linii (wymóg kubernetesa)
+echo -n "root" | base64   # użytkownik
+echo -n "TajneHasło" | base64 # hasło
+```
+
+TIP:
+**Sprawdzanie znaczeń skrót**
+```bash
+man echo
+```
+![man echo](src/img/manecho.png)
+
+
+**Dodanie plik do klastra** (tz inne obiekty mogły z niego korzystać )
+```bash
+kubectl apply -f secret.yaml
+```
+![secret](src/img/secret.png)
+
+Sprawdzenie czy plik został dodany
+```bash
+kubectl get secrets
+#kubectl get secrets --all-namespaces   # wszystkie nawet systemowe pliki secret (wewnętrzne informacje dla kubernetesa ja łączyć poszczególne elementy w całość)
+```
+
+Opis secretu
+```bash
+kubectl describe secret db-secret
+```
+
+![secret describe](src/img/sd.png)
+
+**SPOSÓB 1**
+**Zdefiniowanie PODa, który korzysta z SECRET**
+
+Przykład PODa uruchamiającego kontener DB z obrazem MySQL.
+
+*w domkuntachach obrazu sa zawarte informacje jakie nalezy podać informacje niezbędne do połączenia*
+
+Opis secretu
+```bash
+vim db.yaml
+```
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: database
+spec:
+  containers:
+  - name: db
+    image: mysql
+    env:
+      - name: MYSQL_ROOT_PASSWORD  # nazwa z dokumentacji obrazu MySQL
+        valueFrom:
+          secretKeyRef:
+            name: db-secret  # nazwa  sekretu
+            key: pass      # nazwa klucz z pliku o danej nazwie
+```
+Implemetnacja
+```bash
+kubectl apply -f db.yaml
+```
+Sprawdzenie poprawności działania
+```bash
+kubectl get po
+```
+Wejscie do środka DB
+```bash
+kubectl exec -it database sh
+```
+Sprawdzenie parametrów db
+```bash
+env
+```
+*patrz pozycja "HOME=" i "MYSQL_ROOT_PASSWORD"*
+![db](src/img/db.png)
+
+wyjscie
+```bash
+exit
+```
+
+**SPOSÓB 2**
+**Drugi sposób na pozyskanie danych z SECRETU i podłączenie ich do PODa**
+
+Podmontowanie jako volumen
+
+```bash
+vim db-finall.yaml
+```
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: database
+spec:
+  containers:
+  - name: db
+    image: mysql
+    volumeMounts:
+    - name: dbconnection
+      mountPath: "/root/dbcredentials"
+      readOnly: true
+    env:
+      - name: MYSQL_ROOT_PASSWORD  # nazwa z dokumentacji obrazu MySQL
+        valueFrom:
+          secretKeyRef:
+            name: db-secret  # nazwa  sekretu
+            key: pass      # nazwa klucz z pliku o danej nazwie
+  volumes:
+  - name: dbconnection
+    secret:
+      secretName: db-secret
+```
+Implemetnacja
+```bash
+kubectl apply -f db-finall.yaml
+```
+Sprawdzenie poprawności działania
+```bash
+kubectl get po
+```
+Wejscie do środka DB
+```bash
+kubectl exec -it database sh
+```
+Sprawdzenie parametrów db
+```bash
+env
+```
+Sprawdznie czy w katalogu root pojawił się plik dbcredentials
+```bash
+ls /root
+```
+![cre](src/img/cre.png)
+![cre2](src/img/cre2.png)
 
 ## 4. Praca z aplikacją kubectl
 
