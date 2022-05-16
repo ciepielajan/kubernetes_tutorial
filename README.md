@@ -1123,15 +1123,284 @@ ls /root
 
 ### 4.1. Interakcja z obiektami
 
-### 4.2. Kopiowanie plików pomiędzy kontenerem a maszyną lokalną
+Przygotowanie pliku na którym będą przestawiane komendy
+
+```bash
+vim env-deployment.yaml
+```
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sleep-and-exit
+  labels:
+    app: sleeper
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sleeper
+  template:
+    metadata:
+      labels:
+        app: sleeper
+    spec:
+      containers:
+      - name: ubuntu
+        env:
+        - name: SLEEP_TIME
+          value: "10"
+        - name: EXIT_CODE
+          value: "2"
+        image: ubuntu:18.04
+        command: [ "/bin/sh", "-c"]
+        args: ["sleep $(SLEEP_TIME) && exit $(EXIT_CODE)"]
+```
+Implementacja pliku
+```bash
+kubectl apply -f env-deployment.yaml
+```
+
+**Rozszerzone dane z metody *kubectl get ...***
+```
+kubectl get po -o wide
+```
+
+![](src/img/wide.png)
+
+**kubeclt edit**
+
+Umożliwia edytownie definicji danego obiektu
+```
+kubectl edit deployment sleep-and-exit
+```
+
+**kubeclt set**
+
+Umożliwia zmianę definicji danego obiektu
+
+```
+kubectl set
+```
+
+![set](src/img/set.png)
+
+Te polecenia ułatwiają wprowadzanie zmian w istniejących zasobach aplikacji.
+
+Dostępne polecenia:
+* **env** Zaktualizuj zmienne środowiskowe w szablonie pod
+* **image** Zaktualizuj obraz szablonu pod 
+* **resources** Zaktualizuj żądania/limity zasobów na obiektach za pomocą szablonów pod
+* **selector** Ustaw selektor na zasobie
+* **serviceaccount** Zaktualizuj konto usługi zasobu
+* **subcjet** Zaktualizuj konto użytkownika, grupy lub usługi w powiązaniu roli lub powiązaniu roli klastra
+
+Przykład **image**
+
+Zmiana wersji image obiektu
+
+```
+kubectl set image deployment/sleep-and-exit ubuntu=ubuntu:16.04
+```
+
+Przykład **env** (zmienne środowiskowe)
+
+Zmiana zmiennych środowiskowych
+
+```
+#zmiana wartości na nieskończoność
+kubectl set env deployment/sleep-and-exit -c ubuntu SLEEP_TIME=inf
+```
+```
+kubectl set env deployment/sleep-and-exit -c ubuntu EXIT_CODE=0
+```
+Sprawdzenie wprowadzonych zmian
+
+```
+kubectl describe deployment sleep-and-exit
+```
+*image, SLEEP_TIME, EXIT_CODE
+![](src/img/set_env.png)
+
+
+**Uwuwanie obiektów**
+
+```
+kubectl delete deployment sleep-and-exit
+```
+
+
+
+
+
+### 4.2. Kopiowanie plików z lokalnej maszyny do kontenera.
+
+**kubectl cp <nazwa pliku> <nazwapodu>/<lokalizacja> -n <namespace>**
+
+Roboczy plik
+```
+echo "<html><h1>Kubernetes</h1></html>" > index.html
+```
+
+Roboczy plik
+```
+vim http-deployment.yaml
+```
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: http
+  labels:
+    app: httpd-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: http
+  template:
+    metadata:
+      labels:
+        app: http
+    spec:
+      containers:
+      - name: http
+        image: httpd
+        ports:
+        - containerPort: 80
+```
+Utworznie NAMESPACE
+```
+kubectl create ns www
+```
+
+Implementacja PODu w NAMESPACE
+```
+kubectl apply -f http-deployment.yaml -n www
+```
+Sprawdzenie czy POD działa poprawnie
+```
+kubectl get po -n www
+```
+
+Stały podgląd outputu
+
+Pobranie IP PODu
+```
+kubectl describe po -n www deployment http-844575f755-49g7f 
+```
+
+Włącznie stałego monitoringu
+```
+minikube ssh
+```
+```
+watch -n 1 "curl -s 172.17.0.3"
+```
+
+Skopiowanie pliku index.html do kontenera
+```
+kubectl cp index.html http-844575f755-49g7f:/usr/local/apache2/htdocs -n www
+```
+
+![cpindex](src/img/cpindex.png)
+
+
+**Kopiowanie folderów wygląda tak samo z tą różnicą że podajemy samą ścieżkę do folderu**
+
+Przykładowy folder
+```bash
+mkdir pages
+```
+
+Skopiowanie folderu
+```
+kubectl cp pages/ http-844575f755-49g7f:/usr/local/apache2/htdocs -n www
+```
+
+Podgląd
+```
+kubectl exec -it -n www http-844575f755-49g7f bash
+```
+```
+ls htdocs/
+```
+![copyf](src/img/copyf.png)
+
+
+
 
 ### 4.3. Informacje o klastrze
 
+**kubectl version**
+```bash
+kubectl version
+```
+
+```bash
+kubectl version -o json
+```
+![](src/img/kubev.png)
+
+
+**explain pod**
+```bash
+kubectl explain pod
+```
+![](src/img/podv.png)
+
+
+**explain deployment**
+```bash
+kubectl explain deployment
+```
+![](src/img/kdv.png)
+
+**API RESOURCES**
+
+Wszystkie obiekty kubernetesowe wraz z wersją, skrótami oraz KIND. Dla każðego z nich można użyć polecenia kubectl explain , aby dostać więcej szczegółów. 
+
+```bash
+kubectl api-resources
+```
+
+![](src/img/apir.png)
+
+
+**API VERSIONS**
+```bash
+kubectl api-versions
+```
+
+![](src/img/apiv.png)
+
+
+
+**GET NODE**
+```bash
+kubectl get nodes
+```
+
+```bash
+kubectl get nodes -o wide
+```
+
+![](src/img/nodes.png)
+
+
+
+
 ### 4.4. Autouzupełnianie
+
+
 
 ## 5. Uruchomienie klastra z kilkoma węzłami
 
 ### 5.1. Wstęp
+
+
+
+
 
 ### 5.2. Google Kubernetes Engine, cz. 1.
 
