@@ -1400,7 +1400,13 @@ kubectl get nodes -o wide
 
 
 
+
 ### 5.2. Google Kubernetes Engine, cz. 1.
+
+GCP - Google Cloud Platform
+
+GKE - Google Kubernetes Engine
+GCE - Google Compute Engine
 
 ### 5.3. Google Kubernetes Engine, cz. 2.
 
@@ -1409,6 +1415,148 @@ kubectl get nodes -o wide
 ### 5.5. Uruchomienie Kubernetesa na VPS za pomocą kubespray, cz. 2.
 
 ### 5.6. Kubeadm na maszynach VirtualBox, cz. 1.
+
+**Tworzenie maszyny virtualnej - GŁÓWNEJ BAZY** z której będziemy tworzyć kolejne
+
+**Pobranie obrazu systemu operacyjnego VM**
+
+http://old-releases.ubuntu.com/releases/bionic/
+
+*ubuntu-18.04-server-amd64.iso	2018-04-26 18:30	704M*
+
+
+
+Otwórz program **Oracle VM VirtualBox Manager** i utwórz nową VM
+
+![vm_create](src/img/vm_create.png)
+![vm_create](src/img/create_vm_2.png)
+![vm_create](src/img/create_vm_3.png)
+![vm_create](src/img/create_vm_4.png)
+![vm_create](src/img/create_vm_5.png)
+![vm_create](src/img/create_vm_6.png)
+![vm_create](src/img/create_vm_7.png)
+
+
+**Uruchom VM**
+
+Ustaw lokalizację pobranego obrazu systemu operacyjnego VM (serwera). Plik .iso
+
+![vm_create](src/img/create_vm_8.png)
+
+Wybierz język oraz polecenie *Install Ubuntu Server*, nastepnie postępuj zgodnie ze standardową instalacją systemu. (korzystaj z domyślnych ustawień)
+
+user: user
+pass: user
+
+![vm_create](src/img/create_vm_9.png)
+
+![vm_create](src/img/create_vm_10.png)
+
+**Po zakończeniu instalacji wyłącz VM** klikacjąc "X" przy okienku.
+
+**Przygotuj VM do pracy**
+
+Włacz ją dwukrotnie klikajać na nią. 
+
+zaloguj się podjać login i hasło
+
+Zakutalizuj system
+```bash
+sudo apt-get update
+sudo apt-get upgrade
+```
+
+**Skonfiguruj sieć** - Ustaw nowy adapter sieciowy
+
+Wyłacz VM
+```bash
+shutdown -h now
+```
+
+Dodaj Host Networsk 
+
+Wejdź w file->preferences->Network->Host-only Networks  lub file->Host Networks Manager 
+
+Tutaj powinien być widoczny nowy adapter. Jeżeli go nie ma należy go dodać (ikona po prawej stronie (add)), jeżeli jest można podejrzeć jakie adresy zostały do niego przypisane. 
+
+Przypisz Host Network do danego VM
+
+Wejdź w ustawienia, zakładka "Network", Zakładka "Adapter 2":
+* True w "Enable Network Adapter", 
+* Attached to: "Host-only Adapter"
+
+![vm_conf](src/img/vm_conf.png)
+
+
+
+**Skonfigurowanie sieci w VM**
+
+Wejdź w daną VM, zaloguj się.
+
+```bash
+ip a
+```
+*Pojawił się kolejny interfejs sieciowy. Należy ustawić aby ten interfejs sieciowy dostawał adres IP po uruchomieniu VM.*
+*
+
+![vm_conf](src/img/vb_1.png)
+
+
+
+```bash
+sudo vim /etc/netplan/01-netcfg.yaml
+```
+
+dopisz brakujący fragment:
+```yaml
+enp0s8:
+  dhcp4: yes
+```
+![vm_conf](src/img/vb_2.png)
+
+Wyłacz VM
+```bash
+shutdown -h now
+```
+
+
+
+
+
+
+**Utwórz VM mastera i 2x VM worker** - sklonuj bazową VM z czystym ubuntu
+
+Klikij Prawym przyciskiem myszki na bazowy VM i kliknij "sklonuj". Parametry klonowania ustaw na *Reinitialize the MAC adddress of all network cards* oraz *Full clone*. Name VM ustaw adekwatnie do pełniącej fukncji np master, worker 1, worker 2
+
+![vm_create](src/img/vb_3.png)
+![vm_create](src/img/vb_4.png)
+![vm_create](src/img/vb_5.png)
+![vm_create](src/img/vb_6.png)
+
+**Sprawdzenie adresów IP nowych VM**
+
+Otwórz matera oraz workery
+
+W kazdym VM sprawdz IP 
+
+```bash
+ip a
+```
+
+
+**Zmiana nazw VM aby odpowiadały nazwom VBoxowym**
+
+
+
+
+
+
+
+
+
+
+
+
 
 ### 5.7. Kubeadm na maszynach VirtualBox, cz. 2.
 
