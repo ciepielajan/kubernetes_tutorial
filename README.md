@@ -1520,7 +1520,7 @@ shutdown -h now
 ```
 
 
-
+### 5.7. Kubeadm na maszynach VirtualBox, cz. 2.
 
 
 
@@ -1533,9 +1533,12 @@ Klikij Prawym przyciskiem myszki na bazowy VM i kliknij "sklonuj". Parametry klo
 ![vm_create](src/img/vb_5.png)
 ![vm_create](src/img/vb_6.png)
 
+
+
 **Sprawdzenie adresów IP nowych VM**
 
 Otwórz matera oraz workery
+ ![vb_start](src/img/vb_start.png)
 
 W kazdym VM sprawdz IP 
 
@@ -1543,10 +1546,41 @@ W kazdym VM sprawdz IP
 ip a
 ```
 
+![vb_ip](src/img/vb_ip.png)
+
+*Jeżeli VB nadal mają te same IP*, wejdź w File/Preferences/Network/Host-only Networks  lub File/Host Networks Manager i utwórz nowe Adresy
+
+*Przydziel nowe adresy do danego VB*, klikając prawym przyciskiem na VB/Preferences/Networks/Adapter2/Name: ustaw na adres który nie był jeszcze przypisany do żadnego innego VB. 
+
+
+![vb_ip2](src/img/vb_ip2.png)
+
 
 **Zmiana nazw VM aby odpowiadały nazwom VBoxowym**
 
 
+```bash
+cd ../../
+sudo vim etc/hostname
+```
+
+![vb name](src/img/vbn1.png)
+
+*Ustawić nazwę taką samją jak VB*
+
+```bash
+sudo vim etc/hosts
+```
+
+![vb name](src/img/vbn2.png)
+
+*Restart systemu*
+```bash
+sudo reboot
+```
+
+
+![vb name](src/img/vbn3.png)
 
 
 
@@ -1554,13 +1588,10 @@ ip a
 
 
 
-
-
-
-
-### 5.7. Kubeadm na maszynach VirtualBox, cz. 2.
 
 ### 5.8. Kubeadm na maszynach VirtualBox, cz. 3.
+
+
 
 ### 5.9. DaemonSet
 
