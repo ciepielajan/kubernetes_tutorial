@@ -481,7 +481,8 @@ tmux
 # c - utworz nową zakładkę z nowym oknem(stare bedzie zachowane)
 # p - (prev) - przełącz zakładkę na poprzedni
 # n - (next) - przełącz zakładkę na nastepne
-
+# :set synchronize-panes - pisanie tego samego jednoczenie na wszystkich oknach
+# :set synchronize-panes off - wyłaczenie pisania tego samego jednoczenie na wszystkich oknach
 
 # okno 4
 watch -n 1 "kubectl get po"
@@ -1466,6 +1467,12 @@ sudo apt-get update
 sudo apt-get upgrade
 ```
 
+Wyłącz partycję wymiany w systemie operacyjnym
+```bash
+sudo swapoff
+sudo swapoff -a
+```
+
 **Skonfiguruj sieć** - Ustaw nowy adapter sieciowy
 
 Wyłacz VM
@@ -1585,13 +1592,175 @@ sudo reboot
 
 
 
-
-
-
-
 ### 5.8. Kubeadm na maszynach VirtualBox, cz. 3.
 
+**Połącz się z systemowego terminala z utworzonymi serwerami**
 
+
+Zainstaluj bibliotekę openssh-server na każdym VB i lokalnym Ubuntu
+```bash
+sudo apt-get install openssh-server
+```
+
+Sprawdz czy serwer jest aktywny
+```bash
+sudo service ssh status
+```
+
+![vb name](src/img/vbss.png)
+
+Połącz próbnie z VB
+```bash
+# Terminal ubuntu 
+## łączymy z VB
+# ssh user@<IP SERVERA>
+sudo ssh user@192.168.57.3
+```
+![vbc1](src/img/vbc1.png)
+
+
+
+
+**Instalacja dockera na VB:**
+
+Otwórz terminl z TMUX i połącz się ze wszysktimi VB
+
+![vbc1](src/img/vbc2.png)
+
+Włączenie trybu pisania jednoczesnie we wszystkich terminalach
+```
+ctrl+b :set synchronize-panes
+```
+
+```bash
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+```
+
+```bash
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+```
+
+```bash
+sudo apt update && sudo apt install docker-ce
+```
+
+**Instalacja kubernetesa na VB:**
+
+```bash
+sudo apt-get update && sudo apt-get install -y apt-transport-https && curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+```
+
+```bash
+echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee -a /etc/apt/sources.list.d/kubernetes.list && sudo apt-get update
+```
+
+```bash
+sudo apt install -y kubeadm  kubelet kubernetes-cni
+```
+
+```bash
+sudo apt install -y kubeadm  kubelet kubernetes-cni
+```
+
+Wyłączenie trybu pisania jednoczesnie we wszystkich terminalach
+```
+ctrl+b :set synchronize-panes off
+```
+
+**Instalacja KUBE ADMIN na VB MASTER**
+```bash
+#sudo kubeadm init --pod-network-cidr=10.244.0.0/16 --apiserver-advertise-address=<Adres IP na interfejsie host-only>
+sudo kubeadm init --pod-network-cidr=10.244.0.0/16 --apiserver-advertise-address=192.168.57.3
+```
+![vbm](src/img/vbm.png)
+
+*Jeżeli nie rozpoczęła się instalcja* (po instalacji pojawi się komunikat "Your Kubernetes control-plane has initialized successfully!") prawdopodobinie dostałes informacje błędach. W moim przypadku jest to:
+
+* [ERROR CRI] - ???
+> Rozwiązanie: 
+> ```bush
+> sudo rm /etc/containerd/config.toml
+> systemctl restart containerd
+> ```
+
+* [ERROR NumCPU] - inforumje że mamy tylko jeden proces 
+> Rozwiąznie: zignorować korzystając z parametru podanego w komunikacie 
+
+```bash
+sudo kubeadm init --pod-network-cidr=10.244.0.0/16 --apiserver-advertise-address=192.168.57.3 --ignore-preflight-errors=NumCPU
+```
+
+
+![vbm1](src/img/vbm1.png)
+
+**Skopiuj wygenerowany klucz i wklej go w terminalach pozostałych WORKerów z dodaniem *sudo* **
+```
+sudo kubeadm join 192.168.57.3:6443 --token bq8rds.4ojs1jx90rcxu75i \
+        --discovery-token-ca-cert-hash sha256:ffdd47ad193006cfd32ce969412c4fea9bcdb3308d4816b0524b0b73577765a8
+```
+
+*Jeżeli pojawią się te same błędy, które również przy masterze, rozwiąż je w identyczny sposób*
+
+![vbw](src/img/vbw.png)
+
+**Sprawdz na MASTER czy widzi workery**
+
+Utworzenie katalogu .kube/config i skopiowanie do niego pliku z konfiguracja
+
+```bash
+mkdir ~/.kube
+sudo cp /etc/kubernetes/admin.conf ~/.kube/config
+```
+
+```bash
+sudo kubectl get po
+```
+
+```bash
+sudo kubectl get no
+```
+
+![vbkube](src/img/vbkube.png)
+
+*Zmiana uprawnień root`a, żeby nie trzeba było wpisuwać *sudo* przed kubectl*
+```bash
+sudo chown -R $(id -u):$(id -g) $HOME/.kube
+```
+```bash
+kubectl get no
+```
+![vbkube2](src/img/vbkube2.png)
+
+
+**Dodanie do k8s pluding sieciowego do MASTERA**
+
+Instalacja pluginu sieciowego flannel:
+
+```bash
+kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+```
+
+```bash
+kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+```
+
+Sprawdzenie czy STATUS wszystkjich nodów jest READY
+```bash
+kubectl get nodes
+```
+*Uruchomienie polecenie kubectl get nodes powinno zwrócić trzy węzły w stanie Ready. Klaster jest gotowy.*
+![vbmf](src/img/vbmf.png)
+
+
+**Zmiana roli węzła master na taką, która pozwoli uruchamiać na nim pody:**
+```bash
+kubectl taint nodes --all node-role.kubernetes.io/master-
+```
+
+
+![vbmf2](src/img/vbmf2.png)
+
+# nie wiem czy rola control-panel możę być,  w kursie prowadzący miał ROLES: MASTER przy masterze, w pozostąłych <none>
 
 ### 5.9. DaemonSet
 
