@@ -1681,6 +1681,7 @@ sudo kubeadm init --pod-network-cidr=10.244.0.0/16 --apiserver-advertise-address
 > ```bush
 > sudo rm /etc/containerd/config.toml
 > systemctl restart containerd
+> # kubeadm init # nie wiem czy konieczne
 > ```
 
 * [ERROR NumCPU] - inforumje że mamy tylko jeden proces 
