@@ -1,6 +1,10 @@
 # Kubernetes tutorial
 https://helion.pl/ksiazki/kubernetes-kurs-video-wdrazanie-aplikacji-michal-zylowski,vuruap.htm
 
+Video
+
+https://youtube.com/playlist?list=PLWk14fU_Pw_setbJ1_KbRD1X0KKa3wKQD
+
 
 
 
